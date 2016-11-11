@@ -1,21 +1,10 @@
 package de.ecspride.sourcesinkfinder;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
-
+import de.ecspride.sourcesinkfinder.IFeature.Type;
+import de.ecspride.sourcesinkfinder.features.*;
+import de.ecspride.sourcesinkfinder.features.MethodClassModifierFeature.ClassModifier;
+import de.ecspride.sourcesinkfinder.features.MethodModifierFeature.Modifier;
+import de.ecspride.sourcesinkfinder.features.ParameterInCallFeature.CheckType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
@@ -27,11 +16,7 @@ import soot.jimple.infoflow.android.data.parsers.PScoutPermissionMethodParser;
 import soot.jimple.infoflow.android.data.parsers.PermissionMethodParser;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.rifl.RIFLDocument;
-import soot.jimple.infoflow.rifl.RIFLDocument.Assignable;
-import soot.jimple.infoflow.rifl.RIFLDocument.Category;
-import soot.jimple.infoflow.rifl.RIFLDocument.DomainSpec;
-import soot.jimple.infoflow.rifl.RIFLDocument.SourceSinkSpec;
-import soot.jimple.infoflow.rifl.RIFLDocument.SourceSinkType;
+import soot.jimple.infoflow.rifl.RIFLDocument.*;
 import soot.jimple.infoflow.rifl.RIFLWriter;
 import soot.jimple.infoflow.source.data.ISourceSinkDefinitionProvider;
 import soot.jimple.infoflow.source.data.SourceSinkDefinition;
@@ -43,39 +28,12 @@ import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.rules.JRip;
 import weka.classifiers.trees.J48;
-import weka.core.Attribute;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.Range;
+import weka.core.*;
 import weka.core.converters.ArffSaver;
-import de.ecspride.sourcesinkfinder.IFeature.Type;
-import de.ecspride.sourcesinkfinder.features.AbstractSootFeature;
-import de.ecspride.sourcesinkfinder.features.BaseNameOfClassPackageName;
-import de.ecspride.sourcesinkfinder.features.IsThreadRunFeature;
-import de.ecspride.sourcesinkfinder.features.MethodAnonymousClassFeature;
-import de.ecspride.sourcesinkfinder.features.MethodBodyContainsObjectFeature;
-import de.ecspride.sourcesinkfinder.features.MethodCallsMethodFeature;
-import de.ecspride.sourcesinkfinder.features.MethodClassConcreteNameFeature;
-import de.ecspride.sourcesinkfinder.features.MethodClassContainsNameFeature;
-import de.ecspride.sourcesinkfinder.features.MethodClassEndsWithNameFeature;
-import de.ecspride.sourcesinkfinder.features.MethodClassModifierFeature;
-import de.ecspride.sourcesinkfinder.features.MethodClassModifierFeature.ClassModifier;
-import de.ecspride.sourcesinkfinder.features.MethodHasParametersFeature;
-import de.ecspride.sourcesinkfinder.features.MethodIsRealSetterFeature;
-import de.ecspride.sourcesinkfinder.features.MethodModifierFeature;
-import de.ecspride.sourcesinkfinder.features.MethodModifierFeature.Modifier;
-import de.ecspride.sourcesinkfinder.features.MethodNameContainsFeature;
-import de.ecspride.sourcesinkfinder.features.MethodNameEndsWithFeature;
-import de.ecspride.sourcesinkfinder.features.MethodNameStartsWithFeature;
-import de.ecspride.sourcesinkfinder.features.MethodReturnsConstantFeature;
-import de.ecspride.sourcesinkfinder.features.ParameterContainsTypeOrNameFeature;
-import de.ecspride.sourcesinkfinder.features.ParameterInCallFeature;
-import de.ecspride.sourcesinkfinder.features.ParameterInCallFeature.CheckType;
-import de.ecspride.sourcesinkfinder.features.ParameterIsInterfaceFeature;
-import de.ecspride.sourcesinkfinder.features.PermissionNameFeature;
-import de.ecspride.sourcesinkfinder.features.ReturnTypeFeature;
-import de.ecspride.sourcesinkfinder.features.VoidOnMethodFeature;
+
+import java.io.*;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Finds possible sources and sinks in a given set of Android system methods using
@@ -469,11 +427,9 @@ public class SourceSinkFinder {
 		Attribute classAttr = new Attribute("class", classes);
 		
 		FastVector methodStrings = new FastVector();
-		for (AndroidMethod am : methods) {
-			if (!methodStrings.contains(am.getSignature())) {
+		for (AndroidMethod am : methods)
+			if (!methodStrings.contains(am.getSignature()))
 				methodStrings.addElement(am.getSignature());
-			}
-		}
 		attributes.addElement(classAttr);
 		Attribute idAttr = new Attribute("id", methodStrings);
 		attributes.addElement(idAttr);
@@ -639,7 +595,8 @@ public class SourceSinkFinder {
 		
 		FastVector methodStrings = new FastVector();
 		for (AndroidMethod am : methods)
-			methodStrings.addElement(am.getSignature());
+			if (!methodStrings.contains(am.getSignature()))
+				methodStrings.addElement(am.getSignature());
 		attributes.addElement(classAttr);
 		Attribute idAttr = new Attribute("id", methodStrings);
 		attributes.addElement(idAttr);
