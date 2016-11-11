@@ -469,8 +469,11 @@ public class SourceSinkFinder {
 		Attribute classAttr = new Attribute("class", classes);
 		
 		FastVector methodStrings = new FastVector();
-		for (AndroidMethod am : methods)
-			methodStrings.addElement(am.getSignature());
+		for (AndroidMethod am : methods) {
+			if (!methodStrings.contains(am.getSignature())) {
+				methodStrings.addElement(am.getSignature());
+			}
+		}
 		attributes.addElement(classAttr);
 		Attribute idAttr = new Attribute("id", methodStrings);
 		attributes.addElement(idAttr);

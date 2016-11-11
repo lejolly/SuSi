@@ -1,2 +1,5 @@
 /ant.settings
 /bin/
+/.idea/
+.DS_Store
+/build/
