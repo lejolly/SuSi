@@ -225,15 +225,18 @@ public class SourceSinkFinder {
 					if (am.isSource()){
 						if(currentCat == null || currentCat != am.getCategory()){
 							currentCat = am.getCategory();
-							if (currentCat == null)
-								throw new RuntimeException("NULL category detected");
-							wr.write("\n" + currentCat.toString() + ":\n");
+							if (currentCat == null) {
+//                                throw new RuntimeException("NULL category detected");
+                            } else {
+                                wr.write("\n" + currentCat.toString() + ":\n");
+                            }
 						}
-						
-						if(diff && !methodsWithPermissions.contains(am))
-							wr.write(am.getSignatureAndPermissions() + " (" + currentCat.toString() + ")\n");
-						else if(!diff)
-							wr.write(am.getSignatureAndPermissions() + " (" + currentCat.toString() + ")\n");
+						if (currentCat != null) {
+                            if(diff && !methodsWithPermissions.contains(am))
+                                wr.write(am.getSignatureAndPermissions() + " (" + currentCat.toString() + ")\n");
+                            else if(!diff)
+                                wr.write(am.getSignatureAndPermissions() + " (" + currentCat.toString() + ")\n");
+                        }
 					}
 				}				
 				wr.flush();
@@ -246,14 +249,17 @@ public class SourceSinkFinder {
 					if (am.isSink()){
 						if(currentCat == null || currentCat != am.getCategory()){
 							currentCat = am.getCategory();
-							wr.write("\n" + currentCat.toString() + ":\n");
+                            if (currentCat != null) {
+                                wr.write("\n" + currentCat.toString() + ":\n");
+                            }
 						}
-					
-						if(diff && !methodsWithPermissions.contains(am))
-							wr.write(am.getSignatureAndPermissions() + " (" + currentCat.toString() + ")\n");
-						else if(!diff)
-							wr.write(am.getSignatureAndPermissions() + " (" + currentCat.toString() + ")\n");
-					}	
+                        if (currentCat != null) {
+                            if(diff && !methodsWithPermissions.contains(am))
+                                wr.write(am.getSignatureAndPermissions() + " (" + currentCat.toString() + ")\n");
+                            else if(!diff)
+                                wr.write(am.getSignatureAndPermissions() + " (" + currentCat.toString() + ")\n");
+                        }
+					}
 				}
 				wr.flush();
 				wr.close();	
